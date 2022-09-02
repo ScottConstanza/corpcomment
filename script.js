@@ -52,6 +52,7 @@ textareaEl.addEventListener('input', inputHandler)
 
 // -- FORM COMPONENT -- //
 
+
 const showVisualIndicator = textCheck => {
     const className = textCheck === 'valid' ? 'form--valid' : 'form--invalid'
 
@@ -131,80 +132,83 @@ const submitHandler = event => {
 formEl.addEventListener('submit', submitHandler);
 
 // -- FEEDBACK COMPONENT -- //
-const clickHandler = () => {
-    //get clicked HTML Element
-    const clickedEl = event.target;
-
-    //determine if user intended to upvote or expand
-    const upvoteIntention = clickedEl.className.includes('upvote');
-
-    //run logic for uploading feedback item
-
-    if (upvoteIntention) {
-        //get the closest upvote button
-        const upvoteBtnEl = clickedEl.closest('.upvote')
-
-        //disable upvote button to prevent spam
-        upvoteBtnEl.disabled = true;
-
-        //select upvote count element within upfront button
-        const upvoteCountEl = upvoteBtnEl.querySelector('.upvote__count');
-
-        //get currently displayed upvote count as a number
-        let upvoteCount = +upvoteCountEl.textContent
-
-        //increment by 1
-        //upvoteCount = upvoteCount + 1;
-
-        //set upvote count in HTML and increment by 1
-        upvoteCountEl.textContent = ++upvoteCount;
-    }else {
-        //expand the clicked feedback item
-        clickedEl.closest('.feedback').classList.toggle('feedback--expand');
+(() => {
+    const clickHandler = () => {
+        //get clicked HTML Element
+        const clickedEl = event.target;
+    
+        //determine if user intended to upvote or expand
+        const upvoteIntention = clickedEl.className.includes('upvote');
+    
+        //run logic for uploading feedback item
+    
+        if (upvoteIntention) {
+            //get the closest upvote button
+            const upvoteBtnEl = clickedEl.closest('.upvote')
+    
+            //disable upvote button to prevent spam
+            upvoteBtnEl.disabled = true;
+    
+            //select upvote count element within upfront button
+            const upvoteCountEl = upvoteBtnEl.querySelector('.upvote__count');
+    
+            //get currently displayed upvote count as a number
+            let upvoteCount = +upvoteCountEl.textContent
+    
+            //increment by 1
+            //upvoteCount = upvoteCount + 1;
+    
+            //set upvote count in HTML and increment by 1
+            upvoteCountEl.textContent = ++upvoteCount;
+        }else {
+            //expand the clicked feedback item
+            clickedEl.closest('.feedback').classList.toggle('feedback--expand');
+        }
+    
     }
-
-}
-
-feedbackListEl.addEventListener('click', clickHandler);
-
-
-fetch(`${BASE_API_URL}/feedbacks`)
-.then(response => response.json())
-.then(data => {
-    spinnerEl.remove();
-
-
-    data.feedbacks.forEach(feedbackItem => renderFeedbackItem(feedbackItem));
-})
-
+    
+    feedbackListEl.addEventListener('click', clickHandler);
+    
+    
+    fetch(`${BASE_API_URL}/feedbacks`)
+    .then(response => response.json())
+    .then(data => {
+        spinnerEl.remove();
+    
+    
+        data.feedbacks.forEach(feedbackItem => renderFeedbackItem(feedbackItem));
+    })
+})();
 
 
 // -- HASHTAG LIST COMPONENT --
-const clickHandler2 = event => {
-    //get the clicked element
-    const clickedEl = event.target;
-
-    // stop function if clicked happened
-    if (clickedEl.className === 'hashtags') return;
-
-    // extract company name
-    const companyNameFromHashtag = clickedEl.textContent.substring(1).toLowerCase().trim();
-
-    //iterate over each feedback item on list
-    feedbackListEl.childNodes.forEach(childNode => {
-        // stop this iteration if its a text node
-        if (childNode.nodeType === 3) return;
-
-        //extract company name
-        const companyNameFromFeedbackItem = childNode.querySelector('.feedback__company').textContent.toLowerCase().trim();
-
-        //remove all feedback items if company names are not equal
-
-        if (companyNameFromHashtag !== companyNameFromFeedbackItem) {
-            childNode.remove();
-        }
-    });
-};
-
-
-hashtagListEl.addEventListener('click' , clickHandler2);
+(() => {
+    const clickHandler2 = event => {
+        //get the clicked element
+        const clickedEl = event.target;
+    
+        // stop function if clicked happened
+        if (clickedEl.className === 'hashtags') return;
+    
+        // extract company name
+        const companyNameFromHashtag = clickedEl.textContent.substring(1).toLowerCase().trim();
+    
+        //iterate over each feedback item on list
+        feedbackListEl.childNodes.forEach(childNode => {
+            // stop this iteration if its a text node
+            if (childNode.nodeType === 3) return;
+    
+            //extract company name
+            const companyNameFromFeedbackItem = childNode.querySelector('.feedback__company').textContent.toLowerCase().trim();
+    
+            //remove all feedback items if company names are not equal
+    
+            if (companyNameFromHashtag !== companyNameFromFeedbackItem) {
+                childNode.remove();
+            }
+        });
+    };
+    
+    
+    hashtagListEl.addEventListener('click' , clickHandler2);
+})();
